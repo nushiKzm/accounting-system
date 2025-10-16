@@ -1,0 +1,39 @@
+// assets, libilities, ...
+Table account_category{
+    id int [pk]
+    name varchar(64)
+    description varchar(256)
+}
+
+// cash, accounts payable, accounts receivable, utilities expenses
+Table account{
+    id int [pk]
+    name varchar(128)
+    category_id int
+    account_code // 100-200: assets
+    description varchar(256)
+}
+
+Table transaction{
+    id int [pk]
+    post_date timestamp
+    enter_date timestamp
+    amount numeric(19,4)
+    description varchar(512)
+}
+
+Table transaction_line{
+    id int [pk]
+    transaction_number int
+    account_id int 
+    debit_or_credit numeric(19,4) // + : debit
+    description varchar(512)
+} 
+
+Table transaction_document{
+    id int [pk]
+    transaction_number int
+    document_path varchar(256)
+    description varchar(256)
+} 
+
