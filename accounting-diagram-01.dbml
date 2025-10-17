@@ -8,17 +8,36 @@ Table account_category{
 // cash, accounts payable, accounts receivable, utilities expenses
 Table account{
     id int [pk]
+    account_code unique [not null] // 100-200: assets
     name varchar(128)
     category_id int
     account_code // 100-200: assets
     description varchar(256)
 }
 
+Table journal{
+    id int [pk]
+    name varchar
+    description text
+    active boolean
+}
+
+Table currency{
+    id int [pk]
+    name varchar
+    code varchar
+    primary boolean
+}
+
 Table transaction{
     id int [pk]
     post_date timestamp
     enter_date timestamp
-    amount numeric(19,4)
+    amount bigint //numeric(19,4)
+    currency_id int
+    journal_id int
+    // total_credit_amount numeric(19,4)
+    // total_debit_amount numeric(19,4)
     description varchar(512)
 }
 
@@ -26,7 +45,9 @@ Table transaction_line{
     id int [pk]
     transaction_number int
     account_id int 
-    debit_or_credit numeric(19,4) // + : debit
+    // debit_or_credit bigint //numeric(19,4) // + : debit
+    debit decimal(12,2)
+    credit decimal(12,2)
     description varchar(512)
 } 
 
@@ -37,3 +58,24 @@ Table transaction_document{
     description varchar(256)
 } 
 
+// -------------------------------------
+Table discount {
+    id int [pk]
+    transaction_id int [not null, ref: > transaction.id]
+    type enum('percentage','fixed')
+    value decimal(12,2)
+    description varchar(256)
+}
+
+// add discount_id int [ref: > discount.id] into transaction_line
+
+Table payment {
+    id int [pk]
+    transaction_id int [not null, ref: > transaction.id]
+    payment_date timestamp
+    amount decimal(12,2)
+    method enum('cash','bank','credit_card','snappay','installment')
+    reference_number varchar(128) // gateway transaction ID
+    status enum('pending','completed','failed')
+    description varchar(256)
+}
